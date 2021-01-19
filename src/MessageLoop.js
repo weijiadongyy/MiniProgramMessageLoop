@@ -4,7 +4,7 @@ function MessageLoop() {
 
 var HOOK_SITE = {
     HEAD: "head",
-    END: "end"
+    // END: "end"
 }
 
 /**
@@ -232,11 +232,11 @@ function runFncAsync(fnc, par, self) {
     return new Promise((resolve, reject) => {
         if (self) {
             fnc.call(self, par).then(res => {
-                resolve();
+                resolve(res);
             });
         } else {
             fnc(par).then(res => {
-                resolve();
+                resolve(false);
             });
 
         }
@@ -251,9 +251,9 @@ function runFncAsync(fnc, par, self) {
  */
 function runFnc(fnc, par, self) {
     if (self) {
-        fnc.call(self, par);
+        return fnc.call(self, par);
     } else {
-        fnc(par);
+        return fnc(par);
     }
 }
 
@@ -277,9 +277,9 @@ function hookCallBack(msg, site = HOOK_SITE.HEAD, reslult = null) {
         case HOOK_SITE.HEAD:
             return MessageLoop._hook[msg.msg][site](msg);
             break
-        case HOOK_SITE.END:
-            return MessageLoop._hook[msg.msg][site](msg, reslult);
-            break
+        // case HOOK_SITE.END:
+        //     return MessageLoop._hook[msg.msg][site](msg, reslult);
+        //     break
         default:
             return true
             break
@@ -308,16 +308,27 @@ let run = function (msg) {
         if (onlyOne) {
             runFncAsync(handle, par, self).then(res => {
                 result = res
-                _subMsg(msg.msg);
-                hookCallBack(msg, HOOK_SITE.END)
+                if (result) {
+                    console.log("事件继续", msg)
+                    MessageLoop.msg.push(msg);
+                } else {
+
+                    _subMsg(msg.msg);
+                }
+
+                // hookCallBack(msg, HOOK_SITE.END)
             });
         } else {
             result = runFnc(handle, par, self);
-            _subMsg(msg.msg);
-            hookCallBack(msg, HOOK_SITE.END)
+            // console.log(result)
+            if (result) {
+                console.log("事件继续", msg)
+                MessageLoop.msg.push(msg);
+            } else {
+                _subMsg(msg.msg);
+            }
+            // hookCallBack(msg, HOOK_SITE.END)
         }
-
-
     }
 }
 

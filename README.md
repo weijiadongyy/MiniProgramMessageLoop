@@ -92,15 +92,13 @@ handleClick = function() {
     console.log("hook 打印参数", par)
     return true
 })
-// 尾hook 参数传入site，不传默认为头
-// 回调参数多一个参数为返回值，如果是对象也可以修改返回值。。
-// 返回一个数字啥的就没办法了，只能读取
-MessageLoop.hook("test", (par, res) => {
-    console.log("hook 打印结果", res)
-    return true
-}, {
-    site: HOOK_SITE.END
-})
+删除尾HOOK 没啥用
 //当然可以自己用原生语法进行hook(什么面向切面 aop 啥的 我都叫hook了)
 ```
+
+```javascript
+回调返回值改为，如果为true，将继续放到消息队列中
+```
+
+
 
