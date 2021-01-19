@@ -1,4 +1,4 @@
-# MiniProgramMessageLoop v1.0.0
+# MiniProgramMessageLoop v1.0.1
 ## 前言
 由于微信小程序跨页面传递事件(参数),包括比如插槽dom要响应组件内事件啥的都比较蛋疼，插件限制就更多了。于是就简单模拟了一下Windows消息循环先做了个能达到目的
 
