@@ -1,3 +1,5 @@
+import {isArray} from "./Object";
+
 function MessageLoop() {
 
 }
@@ -23,8 +25,41 @@ MessageLoop.msgCount = {};
  * @type {{setData: MessageLoop.handle.setData}}
  */
 MessageLoop.handle = {
-    "setData": function (par) {
+    "_setData": function (par) {
         this.setData(par);
+    },
+    "setData": function (par) {
+        console.log("setData", par)
+        var page = par.router
+        switch (typeof page) {
+            case "string":
+                page = [page]
+                break
+            case "object":
+                if (!isArray(page)) {
+                    console.log("参数错误", page)
+                    return
+                }
+                break
+            default:
+                console.log("参数错误", page)
+                return
+
+        }
+
+        MessageLoop.postMessage("_setData", par.data, null, {
+            router: page
+        })
+    },
+    "goToGoods": function (par) {
+        console.log("goToGoods", par)
+        MessageLoop.postMessage("setData", {
+            router: "pages/goods/goods",
+            data: {
+                RenderData: par.data,
+                RenderData_show: par.data,
+            }
+        })
     }
 }
 
@@ -66,12 +101,13 @@ MessageLoop.hook = function (msg, callBack, other = {}) {
         _hook = MessageLoop._hook[msg]
     }
 
+    _hook[HOOK_SITE.HEAD] = callBack
 
-    if (other.site == HOOK_SITE.END) {
-        _hook[HOOK_SITE.END] = callBack
-    } else {
-        _hook[HOOK_SITE.HEAD] = callBack
-    }
+    // if (other.site == HOOK_SITE.END) {
+    //     _hook[HOOK_SITE.END] = callBack
+    // } else {
+    //     _hook[HOOK_SITE.HEAD] = callBack
+    // }
 
     MessageLoop._hook[msg] = _hook
 
@@ -269,7 +305,7 @@ function hookCallBack(msg, site = HOOK_SITE.HEAD, reslult = null) {
     }
 
     if (typeof MessageLoop._hook[msg.msg][site] != "function") {
-        console.log(msg.msg, "hook回调有问题", MessageLoop._hook[msg.msg][site]);
+        console.log(msg.msg, "hook回调有问题", MessageLoop._hook[msg.msg]);
         return true;
     }
 
